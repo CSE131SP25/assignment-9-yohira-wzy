@@ -11,7 +11,9 @@ public class Snake {
 	private double deltaY;
 	
 	public Snake() {
-		//FIXME - set up the segments instance variable
+		segments = new LinkedList<>();
+		// Initialize with one segment at the center of the screen
+		segments.add(new BodySegment(0.5, 0.5, SEGMENT_SIZE));
 		deltaX = 0;
 		deltaY = 0;
 	}
@@ -37,14 +39,35 @@ public class Snake {
 	 * based on the current direction of travel
 	 */
 	public void move() {
-		//FIXME
+if (segments.isEmpty()) return;
+		
+		// Store previous positions for body segments
+		double prevX = segments.getFirst().getX();
+		double prevY = segments.getFirst().getY();
+		
+		// Move head first
+		BodySegment head = segments.getFirst();
+		head.setX(head.getX() + deltaX);
+		head.setY(head.getY() + deltaY);
+		
+		// Move each subsequent segment to previous segment's position
+		for (int i = 1; i < segments.size(); i++) {
+			BodySegment current = segments.get(i);
+			double tempX = current.getX();
+			double tempY = current.getY();
+			current.setX(prevX);
+			current.setY(prevY);
+			prevX = tempX;
+			prevY = tempY;	}
 	}
 	
 	/**
 	 * Draws the snake by drawing each segment
 	 */
 	public void draw() {
-		//FIXME
+		for (BodySegment segment : segments) {
+			segment.draw();
+		}
 	}
 	
 	/**
@@ -53,7 +76,17 @@ public class Snake {
 	 * @return true if the snake successfully ate the food
 	 */
 	public boolean eatFood(Food f) {
-		//FIXME
+		if (segments.isEmpty()) return false;
+		
+		BodySegment head = segments.getFirst();
+		double distance = Math.sqrt(Math.pow(head.getX() - f.getX(), 2) + 
+								   Math.pow(head.getY() - f.getY(), 2));
+		
+		if (distance < (SEGMENT_SIZE/2 + Food.FOOD_SIZE/2)) {
+			// Add new segment at the end (position doesn't matter as move() will correct it)
+			segments.add(new BodySegment(-1, -1, SEGMENT_SIZE));
+			return true;
+		}
 		return false;
 	}
 	
@@ -62,7 +95,24 @@ public class Snake {
 	 * @return whether or not the head is in the bounds of the window
 	 */
 	public boolean isInbounds() {
-		//FIXME
-		return true;
+	    if (segments.isEmpty()) return false;
+	    
+	    BodySegment head = segments.getFirst();
+	    double headX = head.getX();
+	    double headY = head.getY();
+	    double radius = SEGMENT_SIZE/2;
+	    
+	    // Check if head is outside screen boundaries (accounting for segment size)
+	    return (headX - radius > 0) && 
+	           (headX + radius < 1) && 
+	           (headY - radius > 0) && 
+	           (headY + radius < 1);
 	}
-}
+	// Helper methods needed for BodySegment access
+	public double getHeadX() {
+		return segments.getFirst().getX();
+	}
+	
+	public double getHeadY() {
+		return segments.getFirst().getY();
+}}

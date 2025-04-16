@@ -13,14 +13,23 @@ public class Food {
 	 * Creates a new Food at a random location
 	 */
 	public Food() {
-		//FIXME
+		this.x = Math.random();  // Random x between 0.0 and 1.0 (StdDraw coordinate system)
+		this.y = Math.random();  // Random y between 0.0 and 1.0
 	}
 	
 	/**
 	 * Draws the Food
 	 */
 	public void draw() {
-		//FIXME
+		StdDraw.setPenColor(StdDraw.RED);  // Food is red by default
+		StdDraw.filledCircle(x, y, FOOD_SIZE/2);  // Draw as circle with radius FOOD_SIZE/2
 	}
-	
+	// Additional helpful getter methods
+		public double getX() {
+			return x;
+		}
+		
+		public double getY() {
+			return y;
+		}	
 }
